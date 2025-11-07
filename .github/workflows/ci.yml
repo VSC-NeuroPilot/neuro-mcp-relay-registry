@@ -1,0 +1,105 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    format:
+        name: Formatting check
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout action
+              uses: actions/checkout@v5
+            
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                version: 10.18.1
+            
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                node-version: 22.14.0
+                cache: pnpm
+                cache-dependency-path: ./pnpm-lock.yaml
+            
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+            
+            - name: Format check
+              run: pnpm exec prettier --check .
+
+    build-server:
+        name: Build server
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout action
+              uses: actions/checkout@v5
+            
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                version: 10.18.1
+            
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                node-version: 22.14.0
+                cache: pnpm
+                cache-dependency-path: ./pnpm-lock.yaml
+            
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+            
+            - name: Build server
+              run: pnpm --filter=server build
+            
+            - name: Zip server build
+              run: zip -r server-build.zip server/.nitro server/.output
+            
+            - name: Upload server
+              uses: actions/upload-artifact@v5
+              with:
+                name: Server build
+                path: server-build.zip
+
+    build-docs:
+        name: Build docs
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout action
+              uses: actions/checkout@v5
+            
+            - name: Cache artifacts
+              uses: actions/cache/restore@v4
+              with:
+                key: astro-cache-${{ github.repository }}
+                path: |
+                    docs/.astro
+                    docs/.cache
+            
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                version: 10.18.1
+            
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                node-version: 22.14.0
+                cache: pnpm
+                cache-dependency-path: ./pnpm-lock.yaml
+            
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+            
+            - name: Build docs
+              run: pnpm --filter=docs build
+            
+            - name: Upload docs
+              uses: actions/upload-artifact@v5
+              with:
+                name: Server build
+                path: docs/dist

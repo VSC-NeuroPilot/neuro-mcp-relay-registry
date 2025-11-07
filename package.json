@@ -1,0 +1,10 @@
+{
+  "name": "neuro-mcp-relay-registry",
+  "version": "VSC-NeuroPilot",
+  "private": true,
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

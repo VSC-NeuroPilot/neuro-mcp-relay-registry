@@ -1,0 +1,49 @@
+---
+title: Welcome to Starlight
+description: Get started building your docs site with Starlight.
+template: splash # Remove or comment out this line to display the site sidebar on this page.
+hero:
+  tagline: Congrats on setting up a new Starlight project!
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: Example Guide
+      link: /guides/example/
+      icon: right-arrow
+    - text: Read the Starlight docs
+      link: https://starlight.astro.build
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+import { ContributorList } from "starlight-contributor-list";
+
+This server was initially envisioned for use with [NeuroMCP](https://github.com/ECHO-HELLO-WORLD424/NeuroMCP) for relay purposes, however, the [NeuroPilot project](https://github.com/VSC-NeuroPilot/neuropilot) would also have a use for it as a registry and separated layer.
+As such, the server was then developed to be a combined relay & registry, and also become application-agnostic.
+
+## Explore
+
+<CardGrid stagger>
+  <Card title="Setup" icon="download">
+    Set up the server for [local](/neuro-mcp-relay-registry/setup/local/) and/or [group](/neuro-mcp-relay-registry/setup/group/) uses.
+    You can also get the server as a [Docker container](/neuro-mcp-relay-registry/setup/docker/).
+  </Card>
+  <Card title="Control/moderate" icon="approve-check">
+    You decide what servers to connect and control what tools are exposed via a web UI.
+  </Card>
+  <Card title="Agnostic to anything and everything" icon="external">
+    Host it anywhere, use it with any AI app\*, and connect any server to it.
+    This server is as agnostic as it can possibly be.
+  </Card>
+  <Card title="Compatible with (legacy) SSE, Streamable HTTP and stdio servers" icon="forward-slash">
+    So that you can bring any server, from any developer, made in any of those formats.
+  </Card>
+</CardGrid>
+- \* - Some apps, such as ChatGPT or Copilot coding agent, may require extra setup since they cannot access locally-hosted servers.
+
+## Contributors
+
+This contributor list reflects the current list, not the list at the time of the version.
+
+<ContributorList githubRepo="VSC-NeuroPilot/neuro-mcp-relay-registry" />

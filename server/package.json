@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./output/server/index.mjs",
+    "build": "vite build",
+    "dev": "vite dev",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "preact": "^10.27.2",
+    "preact-iso": "^2.11.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "nitro": "npm:nitro-nightly@3.0.1-20251104-223815-3402cc78",
+    "vite": "^7.1.12"
+  }
+}

@@ -1,0 +1,6 @@
+.changeset
+.devcontainer
+.github
+.dockerignore
+**/node_modules
+TODO.md
