@@ -101,5 +101,5 @@ jobs:
       - name: Upload docs
         uses: actions/upload-artifact@v5
         with:
-          name: Server build
+          name: Docs build
           path: docs/dist
