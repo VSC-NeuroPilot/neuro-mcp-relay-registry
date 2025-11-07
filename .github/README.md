@@ -19,23 +19,23 @@ This README assumes you are setting up after cloning/downloading the repo direct
 
 1. After obtaining the repo, install dependencies using `pnpm`:
 
-    ```sh
-    pnpm install
-    ```
+   ```sh
+   pnpm install
+   ```
 
 2. Build the server:
 
-    ```sh
-    pnpm build
-    ```
+   ```sh
+   pnpm build
+   ```
 
 3. Start the server:
 
-    ```sh
-    node ./output/server/index.mjs
-    ```
+   ```sh
+   node ./output/server/index.mjs
+   ```
 
-    This will start the server on port 3000.
+   This will start the server on port 3000.
 
 ## Interact
 

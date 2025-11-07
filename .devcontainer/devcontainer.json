@@ -1,29 +1,26 @@
 {
-    "name": "mcp-relay-container",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": ".."
+  "name": "mcp-relay-container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "postStartCommand": "pnpm dev",
+  "remoteUser": "neuromcp",
+  "containerUser": "vsc-neuropilot",
+  "forwardPorts": [3000, 4321],
+  "portsAttributes": {
+    "3000": {
+      "label": "MCP Server",
+      "onAutoForward": "notify"
     },
-    "postStartCommand": "pnpm dev",
-    "remoteUser": "neuromcp",
-    "containerUser": "vsc-neuropilot",
-    "forwardPorts": [
-        3000,
-        4321
-    ],
-    "portsAttributes": {
-        "3000": {
-            "label": "MCP Server",
-            "onAutoForward": "notify"
-        },
-        "4321": {
-            "label": "Server docs",
-            "onAutoForward": "silent"
-        }
-    },
-    "customizations": {
-        "codespaces": {
-            "openFiles": ["README.md"]
-        }
+    "4321": {
+      "label": "Server docs",
+      "onAutoForward": "silent"
     }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["README.md"]
+    }
+  }
 }

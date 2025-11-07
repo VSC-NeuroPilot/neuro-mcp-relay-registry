@@ -43,10 +43,10 @@ export default defineConfig({
           href: "https://github.com/VSC-NeuroPilot/neuro-mcp-relay-registry",
         },
         {
-          icon: 'seti:docker',
-          label: 'Docker image',
-          href: 'https://hub.docker.com/r/ktrain5369/neuro-mcp-relay-registry'
-        }
+          icon: "seti:docker",
+          label: "Docker image",
+          href: "https://hub.docker.com/r/ktrain5369/neuro-mcp-relay-registry",
+        },
       ],
       customCss: ["./src/styles/theme.css"],
       sidebar: [
@@ -65,12 +65,12 @@ export default defineConfig({
           label: "navLinks", // THESE ARE USED FOR NAVLINKS
           items: [
             {
-              label: 'Issues',
-              link: 'https://github.com/VSC-NeuroPilot/neuro-mcp-relay-registry/issues'
+              label: "Issues",
+              link: "https://github.com/VSC-NeuroPilot/neuro-mcp-relay-registry/issues",
             },
             {
-              label: 'Discussions',
-              link: 'https://github.com/VSC-NeuroPilot/neuro-mcp-relay-registry/discussions'
+              label: "Discussions",
+              link: "https://github.com/VSC-NeuroPilot/neuro-mcp-relay-registry/discussions",
             },
             {
               label: "NeuroPilot",
