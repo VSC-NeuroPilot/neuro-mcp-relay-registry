@@ -1,3 +1,9 @@
 packages:
-  - 'server/'
-  - 'docs/'
+  - server/
+  - docs/
+
+ignoredBuiltDependencies:
+  - sharp
+
+onlyBuiltDependencies:
+  - esbuild
