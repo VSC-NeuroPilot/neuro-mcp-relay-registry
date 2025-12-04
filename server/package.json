@@ -6,7 +6,9 @@
     "start": "node ./output/server/index.mjs",
     "build": "vite build",
     "dev": "vite dev",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:relay": "tsx test-relay-server.ts",
+    "test:cli": "tsx test-cli.ts"
   },
   "keywords": [],
   "author": "",
