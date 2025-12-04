@@ -1,6 +1,7 @@
 .changeset
 .devcontainer
 .github
+.idea
 .dockerignore
 **/node_modules
 TODO.md
