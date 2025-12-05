@@ -1,4 +1,4 @@
-import {BaseMcpClient} from "./base-client.js";
+import {BaseMcpClient} from "./base-client";
 import {StdioMcpClientConfig} from "./types";
 
 /**
