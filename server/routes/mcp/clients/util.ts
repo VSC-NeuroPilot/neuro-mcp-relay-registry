@@ -1,27 +1,5 @@
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-
-/**
- * Raw result from other MCP server that can be either new format (protocol 2025-v3):
- * {
- *   content: ContentBlock[],
- *   isError?:
- *   boolean,
- *   ...
- * }
- * or legacy () format (protocol 2024-10-07): { toolResult: unknown, ... }
- */
-export type RawCallToolResult =
-    | CallToolResult
-    | (Partial<CallToolResult> & { toolResult: unknown })
-    | Record<string, unknown>;
-
-/**
- * Result of a tool execution. The `result` field uses new CallToolResult format from MCP protocol 2025-v3
- */
-export interface McpToolCallResult {
-    success: boolean;
-    result: CallToolResult;
-}
+import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
+import type {RawCallToolResult} from "./types";
 
 /**
  * Normalizes a raw MCP call tool result to `CallToolResult` format from `@modelcontextprotocol/sdk/types.js`.

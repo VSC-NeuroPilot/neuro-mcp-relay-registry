@@ -9,7 +9,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { ListToolsRequestSchema, CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { StreamableHttpMcpClient } from "./routes/mcp/http.js";
+import { McpClientFactory } from "./routes/mcp/index.js";
+import type { BaseMcpClient } from "./routes/mcp/index.js";
 import { createServer } from "http";
 
 const DEFAULT_HOST = "localhost";
@@ -35,11 +36,15 @@ async function main() {
 
     console.log(`[Relay Server] Connecting to upstream server: ${upstreamUrl}`);
 
-    // Create client to connect to upstream MCP server
-    const upstreamClient = new StreamableHttpMcpClient();
+    // Create client using factory - supports multiple transport types
+    const upstreamClient: BaseMcpClient = McpClientFactory.create({
+        transport: 'http',
+        serverUrl: upstreamUrl,
+        name: 'Upstream Server'
+    });
 
     try {
-        await upstreamClient.connectToServer(upstreamUrl);
+        await upstreamClient.connectToServer();
         console.log(`[Relay Server] Connected to upstream server`);
         console.log(`[Relay Server] Available tools: ${upstreamClient.availableToolNames.join(", ")}`);
     } catch (error) {
