@@ -8,7 +8,7 @@
 
 import type {McpToolCallResult} from '../clients/types';
 import {createErrorToolCallResult} from '../clients/util';
-import {McpClientFactory} from '../factory';
+import {McpClientFactory} from '../clients/factory';
 import {AsyncRWLock} from './locks';
 import {ServerWrapper} from './server-wrapper';
 import type {AggregatedTool, RegistrationResult, RegistryStats, ServerRegistrationConfig,} from './types';

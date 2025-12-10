@@ -1,8 +1,8 @@
-import {BaseMcpClient} from "./clients/base-client";
-import {StreamableHttpMcpClient} from "./clients/http";
-import {SseMcpClient} from "./clients/sse";
-import {StdioMcpClient} from "./clients/stdio";
-import type {HttpMcpClientConfig, McpClientConfig, SseMcpClientConfig, StdioMcpClientConfig} from "./clients/types";
+import {BaseMcpClient} from "./base-client";
+import {StreamableHttpMcpClient} from "./http";
+import {SseMcpClient} from "./sse";
+import {StdioMcpClient} from "./stdio";
+import type {HttpMcpClientConfig, McpClientConfig, SseMcpClientConfig, StdioMcpClientConfig} from "./types";
 
 /**
  * Factory for creating MCP clients based on transport type.

@@ -39,7 +39,7 @@
 
 // Base client and factory
 export { BaseMcpClient } from './clients/base-client';
-export { McpClientFactory } from './factory';
+export { McpClientFactory } from './clients/factory';
 
 // Concrete implementations
 export { StreamableHttpMcpClient } from './clients/http';
