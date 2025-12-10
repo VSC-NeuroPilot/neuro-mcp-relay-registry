@@ -1,7 +1,7 @@
 import {Client} from "@modelcontextprotocol/sdk/client/index.js";
 import type {Tool} from '@modelcontextprotocol/sdk/types.js';
 import type {McpClientConfig, McpToolCallResult} from './types';
-import {normalizeCallToolResult} from './util';
+import {createErrorToolCallResult, normalizeCallToolResult} from './util';
 
 /**
  * Abstract base class for MCP clients.
@@ -10,6 +10,7 @@ import {normalizeCallToolResult} from './util';
  * All concrete implementations must extend this class and implement its abstract methods.
  */
 export abstract class BaseMcpClient {
+    public serverName: string;
     /**
      * Configuration for this client
      */
@@ -36,10 +37,7 @@ export abstract class BaseMcpClient {
     protected constructor(config: McpClientConfig) {
         this.config = config;
         this.initializeClient();
-    }
-
-    public get isConnected(): boolean {
-        return this.connected;
+        this.serverName = this.getDisplayName()
     }
 
     public get availableTools(): readonly Tool[] {
@@ -100,7 +98,7 @@ export abstract class BaseMcpClient {
      */
     public async callTool(toolName: string, args?: Record<string, unknown>): Promise<McpToolCallResult> {
         if (!this.mcpClient || !this.connected) {
-            return this.createErrorResult("MCP Client not connected or configured properly");
+            return createErrorToolCallResult("MCP Client not connected or configured properly");
         }
 
         try {
@@ -115,7 +113,7 @@ export abstract class BaseMcpClient {
             };
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            return this.createErrorResult(errorMessage);
+            return createErrorToolCallResult(errorMessage);
         }
     }
 
@@ -170,25 +168,6 @@ export abstract class BaseMcpClient {
      */
     protected getToolNamesFromTools(): string[] {
         return this.tools.map(t => t.name);
-    }
-
-    /**
-     * Create a standardized error result.
-     * Used by all transport types for consistent error handling.
-     */
-    protected createErrorResult(message: string): McpToolCallResult {
-        return {
-            success: false,
-            result: {
-                content: [
-                    {
-                        type: "text",
-                        text: message
-                    }
-                ],
-                isError: true
-            }
-        };
     }
 
     /**

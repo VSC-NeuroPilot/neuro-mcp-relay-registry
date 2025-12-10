@@ -2,7 +2,7 @@
  * Interactive CLI to test the relay server by calling tools
  *
  * Usage: tsx test-cli.ts [relay-server-url]
- * Example: tsx test-cli.ts http://localhost:3100
+ * Example: tsx test-cli.ts http://127.0.0.1:3100
  */
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -78,20 +78,38 @@ class TestCLI {
         }
 
         console.log("\n=== Available Tools ===\n");
-        this.tools.forEach((tool, index) => {
-            console.log(`${index + 1}. ${tool.name}`);
-            if (tool.description) {
-                console.log(`   Description: ${tool.description}`);
+
+        // Group tools by server prefix
+        const groupedTools = new Map<string, Tool[]>();
+        this.tools.forEach((tool) => {
+            const parts = tool.name.split(":");
+            const serverPrefix = parts.length > 1 ? parts[0] : "local";
+            if (!groupedTools.has(serverPrefix)) {
+                groupedTools.set(serverPrefix, []);
             }
-            if (tool.inputSchema.properties) {
-                const props = Object.keys(tool.inputSchema.properties);
-                console.log(`   Parameters: ${props.join(", ") || "none"}`);
-                if (tool.inputSchema.required && tool.inputSchema.required.length > 0) {
-                    console.log(`   Required: ${tool.inputSchema.required.join(", ")}`);
-                }
-            }
-            console.log();
+            groupedTools.get(serverPrefix)!.push(tool);
         });
+
+        // Display tools grouped by server
+        for (const [serverPrefix, tools] of groupedTools.entries()) {
+            console.log(`From ${serverPrefix}:`);
+            tools.forEach((tool, index) => {
+                const parts = tool.name.split(":");
+                parts.length > 1 ? parts.slice(1).join(":") : tool.name;
+                console.log(`  ${index + 1}. ${tool.name}`);
+                if (tool.description) {
+                    console.log(`     Description: ${tool.description}`);
+                }
+                if (tool.inputSchema.properties) {
+                    const props = Object.keys(tool.inputSchema.properties);
+                    console.log(`     Parameters: ${props.join(", ") || "none"}`);
+                    if (tool.inputSchema.required && tool.inputSchema.required.length > 0) {
+                        console.log(`     Required: ${tool.inputSchema.required.join(", ")}`);
+                    }
+                }
+            });
+            console.log();
+        }
     }
 
     async callTool(toolName: string, args: Record<string, unknown>): Promise<void> {
@@ -143,9 +161,9 @@ class TestCLI {
     async interactiveMode(): Promise<void> {
         console.log("\n=== Interactive Mode ===");
         console.log("Commands:");
-        console.log("  list              - List all available tools");
-        console.log("  call <tool-name>  - Call a tool (will prompt for arguments)");
-        console.log("  exit              - Exit the CLI\n");
+        console.log("  list                    - List all available tools");
+        console.log("  call <tool-name>        - Call a tool (using full prefixed name, e.g., server1:toolName)");
+        console.log("  exit                    - Exit the CLI\n");
 
         while (true) {
             const input = await this.question("> ");
@@ -208,9 +226,9 @@ class TestCLI {
 
                 case "help":
                     console.log("\nCommands:");
-                    console.log("  list              - List all available tools");
-                    console.log("  call <tool-name>  - Call a tool (will prompt for arguments)");
-                    console.log("  exit              - Exit the CLI");
+                    console.log("  list                    - List all available tools");
+                    console.log("  call <tool-name>        - Call a tool (using full prefixed name, e.g., server1:toolName)");
+                    console.log("  exit                    - Exit the CLI");
                     break;
 
                 default:

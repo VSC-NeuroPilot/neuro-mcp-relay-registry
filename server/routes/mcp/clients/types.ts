@@ -110,6 +110,7 @@ export type McpClientConfig =
  */
 export type ConnectionState =
     | 'disconnected'
+    | 'disconnecting'
     | 'connecting'
     | 'connected'
     | 'error';
@@ -152,6 +153,11 @@ export interface ServerInfo {
      * When the connection was established
      */
     connectedAt?: Date;
+
+    /**
+     * Optional metadata about the server
+     */
+    metadata?: Record<string, unknown>;
 }
 
 /**

@@ -1,5 +1,5 @@
 import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
-import type {RawCallToolResult} from "./types";
+import type {McpToolCallResult, RawCallToolResult} from "./types";
 
 /**
  * Normalizes a raw MCP call tool result to `CallToolResult` format from `@modelcontextprotocol/sdk/types.js`.
@@ -24,4 +24,30 @@ export function normalizeCallToolResult(rawResult: RawCallToolResult): CallToolR
 
     // Already in standard format or has both fields
     return rawResult as CallToolResult;
+}
+
+/**
+ * Creates a standardized error result for MCP tool calls.
+ *
+ * @param message - Error message to include in the result
+ * @returns A standardized error result object
+ *
+ * @example
+ * ```typescript
+ * return createErrorResult("Server not found");
+ * ```
+ */
+export function createErrorToolCallResult(message: string): McpToolCallResult {
+    return {
+        success: false,
+        result: {
+            content: [
+                {
+                    type: "text",
+                    text: message
+                }
+            ],
+            isError: true
+        }
+    };
 }

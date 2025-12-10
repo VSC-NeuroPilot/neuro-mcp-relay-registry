@@ -1,37 +1,50 @@
 /**
- * MCP Client Module
+ * MCP Client, Registry, and Router Module
  *
- * Provides a universal API for connecting to MCP servers via different transports:
- * - HTTP (Streamable HTTP)
- * - SSE (Server-Sent Events)
- * - STDIO (Standard Input/Output)
+ * Provides a complete system for:
+ * - Connecting to MCP servers via different transports (HTTP, SSE, STDIO)
+ * - Managing multiple upstream servers with a registry
+ * - Routing tool calls to appropriate servers
+ * - Exposing aggregated tools as a unified MCP server
  *
  * @example
  * ```typescript
- * import { McpClientFactory } from './routes/mcp';
+ * import { McpClientFactory, McpRelayServer } from './routes/mcp';
  *
- * // Create an HTTP client
- * const client = McpClientFactory.create({
- *   transport: 'http',
- *   serverUrl: 'http://localhost:3000',
- *   name: 'My MCP Server'
+ * // Create a relay server
+ * const relay = new McpRelayServer({
+ *   name: 'my-relay',
+ *   version: '1.0.0'
  * });
  *
- * await client.connectToServer();
- * const tools = client.availableTools;
- * const result = await client.callTool('my-tool', { arg: 'value' });
- * await client.disconnectFromServer();
+ * await relay.initialize();
+ *
+ * // Register upstream servers
+ * const registry = relay.getRegistry();
+ * await registry.registerServer({
+ *   serverId: 'server1',
+ *   clientConfig: {
+ *     transport: 'http',
+ *     serverUrl: 'http://127.0.0.1:3001',
+ *     name: 'Server 1'
+ *   }
+ * });
+ *
+ * // Get MCP server for transport attachment
+ * const mcpServer = relay.getMcpServer();
  * ```
  */
 
+// ===== Client Module =====
+
 // Base client and factory
-export {BaseMcpClient} from './clients/base-client';
-export {McpClientFactory} from './factory';
+export { BaseMcpClient } from './clients/base-client';
+export { McpClientFactory } from './factory';
 
 // Concrete implementations
-export {StreamableHttpMcpClient} from './clients/http';
+export { StreamableHttpMcpClient } from './clients/http';
 
-// Types
+// Client types
 export type {
     TransportType,
     BaseMcpClientConfig,
@@ -40,8 +53,43 @@ export type {
     StdioMcpClientConfig,
     McpClientConfig,
     ConnectionState,
-    ServerInfo
+    ServerInfo,
+    McpToolCallResult,
+    RawCallToolResult,
 } from './clients/types';
 
-// Utilities
-export type {McpToolCallResult, RawCallToolResult} from './clients/types';
+// ===== Registry Module =====
+
+export {
+    ServerRegistry,
+    ServerWrapper,
+    AsyncRWLock,
+    AsyncMutex,
+} from './registry/index';
+
+export type {
+    AggregatedTool,
+    ServerRegistrationConfig,
+    RegistrationResult,
+    RegistryStats,
+} from './registry/index';
+
+// ===== Router Module =====
+
+export {
+    ToolRouter,
+    ToolNameParser
+} from './router/index';
+
+export type {
+    ParsedToolName,
+} from './router/index';
+
+// ===== Server Module =====
+
+export { McpRelayServer } from './server/index';
+
+export type {
+    McpRelayServerConfig,
+    RelayServerInfo,
+} from './server/index';
