@@ -3,6 +3,7 @@
  */
 
 import type {ServerRegistry} from '../registry';
+import type {PermissionMode} from '../permissions';
 
 /**
  * Configuration for the MCP relay server.
@@ -43,6 +44,24 @@ export interface McpRelayServerConfig {
      * Optional server instructions (shown to clients)
      */
     instructions?: string;
+
+    /**
+     * Default permission mode for tools
+     * @default 'copilot'
+     */
+    defaultPermissionMode?: PermissionMode;
+
+    /**
+     * Default approval timeout in milliseconds
+     * @default 300000 (5 minutes)
+     */
+    defaultApprovalTimeout?: number;
+
+    /**
+     * Maximum approval history size
+     * @default 1000
+     */
+    approvalHistoryMaxSize?: number;
 }
 
 /**

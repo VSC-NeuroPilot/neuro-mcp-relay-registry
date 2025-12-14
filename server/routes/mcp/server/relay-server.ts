@@ -8,6 +8,7 @@ import type {CallToolRequest, ListToolsRequest} from '@modelcontextprotocol/sdk/
 import {CallToolRequestSchema, ListToolsRequestSchema} from '@modelcontextprotocol/sdk/types.js';
 import {ServerRegistry} from '../registry';
 import {ToolRouter} from '../router';
+import {PermissionManager} from '../permissions';
 import type {McpRelayServerConfig, RelayServerInfo} from './types';
 
 /**
@@ -42,6 +43,7 @@ export class McpRelayServer {
     private readonly mcpServer: McpServer;
     private readonly registry: ServerRegistry;
     private readonly router: ToolRouter;
+    private readonly permissionManager: PermissionManager;
     private readonly config: McpRelayServerConfig;
     private readonly startTime: Date;
     private initialized: boolean = false;
@@ -58,6 +60,16 @@ export class McpRelayServer {
         // Create or use provided registry
         this.registry = config.registry ?? new ServerRegistry(config.maxPending, config.lockTimeout);
         this.router = new ToolRouter(this.registry, config.toolSeparator);
+
+        // Create permission manager
+        this.permissionManager = new PermissionManager(this.router, {
+            defaultMode: config.defaultPermissionMode ?? 'copilot',
+            lockTimeout: config.lockTimeout,
+            maxPending: config.maxPending,
+            historyMaxSize: config.approvalHistoryMaxSize,
+            defaultApprovalTimeout: config.defaultApprovalTimeout,
+        });
+
         this.mcpServer = new McpServer(
             {
                 name: config.name,
@@ -128,6 +140,21 @@ export class McpRelayServer {
         return this.router;
     }
 
+    /**
+     * Get the permission manager.
+     *
+     * @returns The permission manager instance
+     *
+     * @example
+     * ```typescript
+     * const permissionManager = relayServer.getPermissionManager();
+     * await permissionManager.updatePermission('server1:search', 'auto');
+     * ```
+     */
+    public getPermissionManager(): PermissionManager {
+        return this.permissionManager;
+    }
+
     // ===== Public API =====
 
     /**
@@ -188,23 +215,27 @@ export class McpRelayServer {
     }
 
     /**
-     * Handle tools/list request - return all tools from all servers.
+     * Handle tools/list request - return all enabled tools from all servers.
      */
     private async handleListTools(_request: ListToolsRequest) {
-        const tools = await this.router.listAllTools();
+        const allTools = await this.router.listAllTools();
+
+        // Filter out disabled tools
+        const enabledTools = await this.permissionManager.filterEnabledTools(allTools);
 
         return {
-            tools: tools as any, // Type conversion for MCP SDK compatibility
+            tools: enabledTools as any, // Type conversion for MCP SDK compatibility
         };
     }
 
     /**
-     * Handle tools/call request - route to appropriate server.
+     * Handle tools/call request - check permissions and route to appropriate server.
      */
     private async handleCallTool(request: CallToolRequest) {
         const {name, arguments: args} = request.params;
 
-        const result = await this.router.callTool(name, args);
+        // Execute tool with permission checks and approval workflow
+        const result = await this.permissionManager.executeTool(name, args);
 
         // Return the result directly - it's already in CallToolResult format
         return result.result;

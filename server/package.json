@@ -8,7 +8,8 @@
     "dev": "vite dev",
     "preview": "vite preview",
     "test:relay": "tsx test-relay-server.ts",
-    "test:cli": "tsx test-cli.ts"
+    "test:cli": "tsx test-cli.ts",
+    "test:permissions": "tsx test-permission-cli.ts"
   },
   "keywords": [],
   "author": "",
