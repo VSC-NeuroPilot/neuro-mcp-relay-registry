@@ -7,6 +7,16 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.0.0
+        version: 1.23.1(zod@4.1.13)
+      fetch-to-node:
+        specifier: ^2.1.0
+        version: 2.1.0
+      hono:
+        specifier: ^4.6.12
+        version: 4.10.8
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.7
@@ -1772,6 +1782,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fetch-to-node@2.1.0:
+    resolution: {integrity: sha512-Wq05j6LE1GrWpT2t1YbCkyFY6xKRJq3hx/oRJdWEJpZlik3g25MmdJS6RFm49iiMJw6zpZuBOrgihOgy2jGyAA==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -5275,6 +5288,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
+
+  fetch-to-node@2.1.0: {}
 
   fill-range@7.1.1:
     dependencies:
