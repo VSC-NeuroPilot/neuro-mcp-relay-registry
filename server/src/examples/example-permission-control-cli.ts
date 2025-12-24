@@ -1,8 +1,8 @@
 /**
  * Interactive CLI to test the permission system
  *
- * Usage: tsx test-permission-cli.ts [relay-server-url]
- * Example: tsx test-permission-cli.ts http://127.0.0.1:3100
+ * Usage: tsx example-permission-control-cli.ts [relay-server-url]
+ * Example: tsx example-permission-control-cli.ts http://127.0.0.1:3100
  */
 
 import * as readline from "readline";
@@ -46,16 +46,6 @@ class PermissionCLI {
             input: process.stdin,
             output: process.stdout
         });
-    }
-
-    private async fetch(path: string, options?: RequestInit): Promise<any> {
-        const url = new URL(path, this.baseUrl);
-        const response = await fetch(url.toString(), options);
-        if (!response.ok) {
-            const text = await response.text();
-            throw new Error(`HTTP ${response.status}: ${text}`);
-        }
-        return response.json();
     }
 
     async checkConnection(): Promise<void> {
@@ -115,8 +105,8 @@ class PermissionCLI {
         try {
             await this.fetch(`/api/permissions/${encodeURIComponent(toolName)}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({mode})
             });
             console.log(`✓ Updated ${toolName} to ${mode.toUpperCase()} mode`);
         } catch (error) {
@@ -171,8 +161,8 @@ class PermissionCLI {
         try {
             await this.fetch(`/api/approvals/${approvalId}/approve`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message || 'Approved via CLI' })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message || 'Approved via CLI'})
             });
             console.log(`✓ Approved ${approvalId}`);
         } catch (error) {
@@ -184,8 +174,8 @@ class PermissionCLI {
         try {
             await this.fetch(`/api/approvals/${approvalId}/reject`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message || 'Rejected via CLI' })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message || 'Rejected via CLI'})
             });
             console.log(`✓ Rejected ${approvalId}`);
         } catch (error) {
@@ -244,12 +234,6 @@ class PermissionCLI {
         } catch (error) {
             console.error("Failed to get stats:", error);
         }
-    }
-
-    private question(prompt: string): Promise<string> {
-        return new Promise((resolve) => {
-            this.rl.question(prompt, resolve);
-        });
     }
 
     async interactiveMode(): Promise<void> {
@@ -369,6 +353,22 @@ class PermissionCLI {
             this.rl.close();
             process.exit(1);
         }
+    }
+
+    private async fetch(path: string, options?: RequestInit): Promise<any> {
+        const url = new URL(path, this.baseUrl);
+        const response = await fetch(url.toString(), options);
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP ${response.status}: ${text}`);
+        }
+        return response.json();
+    }
+
+    private question(prompt: string): Promise<string> {
+        return new Promise((resolve) => {
+            this.rl.question(prompt, resolve);
+        });
     }
 }
 

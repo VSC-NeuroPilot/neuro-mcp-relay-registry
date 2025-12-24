@@ -38,11 +38,11 @@
 // ===== Client Module =====
 
 // Base client and factory
-export { BaseMcpClient } from './clients/base-client';
-export { McpClientFactory } from './clients/factory';
+export {BaseMcpClient} from './clients/base-client';
+export {McpClientFactory} from './clients/factory';
 
 // Concrete implementations
-export { StreamableHttpMcpClient } from './clients/http';
+export {StreamableHttpMcpClient} from './clients/http';
 
 // Client types
 export type {
@@ -87,7 +87,7 @@ export type {
 
 // ===== Server Module =====
 
-export { McpRelayServer } from './server/index';
+export {McpRelayServer} from './server/index';
 
 export type {
     McpRelayServerConfig,

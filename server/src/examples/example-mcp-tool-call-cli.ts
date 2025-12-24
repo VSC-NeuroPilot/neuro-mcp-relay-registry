@@ -1,12 +1,12 @@
 /**
  * Interactive CLI to test the relay server by calling tools
  *
- * Usage: tsx test-cli.ts [relay-server-url]
- * Example: tsx test-cli.ts http://127.0.0.1:3100
+ * Usage: tsx example-mcp-tool-call-cli.ts [relay-server-url]
+ * Example: tsx example-mcp-tool-call-cli.ts http://127.0.0.1:3100
  */
 
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import {Client} from "@modelcontextprotocol/sdk/client/index.js";
+import {StreamableHTTPClientTransport} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import * as readline from "readline";
 
 const DEFAULT_RELAY_URL = "http://localhost:3100";
@@ -21,7 +21,7 @@ interface Tool {
     };
 }
 
-class TestCLI {
+class ExampleMcpToolCallCli {
     private readonly client: Client;
     private transport: StreamableHTTPClientTransport | null = null;
     private tools: Tool[] = [];
@@ -152,12 +152,6 @@ class TestCLI {
         }
     }
 
-    private question(prompt: string): Promise<string> {
-        return new Promise((resolve) => {
-            this.rl.question(prompt, resolve);
-        });
-    }
-
     async interactiveMode(): Promise<void> {
         console.log("\n=== Interactive Mode ===");
         console.log("Commands:");
@@ -240,6 +234,12 @@ class TestCLI {
     close(): void {
         this.rl.close();
     }
+
+    private question(prompt: string): Promise<string> {
+        return new Promise((resolve) => {
+            this.rl.question(prompt, resolve);
+        });
+    }
 }
 
 async function main() {
@@ -247,7 +247,7 @@ async function main() {
 
     console.log("=== MCP Relay Test CLI ===\n");
 
-    const cli = new TestCLI(relayUrl);
+    const cli = new ExampleMcpToolCallCli(relayUrl);
 
     try {
         await cli.connect();

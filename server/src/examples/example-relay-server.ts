@@ -2,13 +2,13 @@
  * Test relay server that connects to multiple upstream MCP servers
  * and exposes them via /mcp endpoint with prefixed tool names
  *
- * Usage: tsx test-relay-server.ts <server-url-1> <server-url-2> ... [--host <host>] [--port <port>]
- * Example: tsx test-relay-server.ts  http://127.0.0.1:3000 http://127.0.0.1:8000 --host 127.0.0.1 --port 3100
+ * Usage: tsx example-relay-server.ts <server-url-1> <server-url-2> ... [--host <host>] [--port <port>]
+ * Example: tsx example-relay-server.ts  http://localhost:3000 http://127.0.0.1:8000 --host 127.0.0.1 --port 3100
  */
 
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { McpRelayServer } from "./routes/mcp";
-import { createServer } from "http";
+import {StreamableHTTPServerTransport} from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import {McpRelayServer} from "../../routes/mcp";
+import {createServer} from "http";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 3100;
@@ -40,11 +40,11 @@ function parseArgs(): ParsedArgs {
         }
     }
 
-    return { upstreamUrls, host, port };
+    return {upstreamUrls, host, port};
 }
 
 async function main() {
-    const { upstreamUrls, host, port } = parseArgs();
+    const {upstreamUrls, host, port} = parseArgs();
 
     if (upstreamUrls.length === 0) {
         console.error("Error: Please provide at least one upstream server URL");
@@ -143,7 +143,7 @@ async function main() {
 
     // Helper to send JSON response
     function sendJson(res: any, statusCode: number, data: any) {
-        res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+        res.writeHead(statusCode, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(data, null, 2));
     }
 
@@ -163,7 +163,7 @@ async function main() {
                     allTools: toolsWithPermissions,
                 });
             } catch (error) {
-                sendJson(res, 500, { error: String(error) });
+                sendJson(res, 500, {error: String(error)});
             }
         } else if (req.url?.startsWith('/api/permissions/') && req.method === 'PUT') {
             try {
@@ -172,14 +172,14 @@ async function main() {
                 const mode = body.mode;
 
                 if (!['auto', 'copilot', 'disabled'].includes(mode)) {
-                    sendJson(res, 400, { error: 'Invalid mode. Must be auto, copilot, or disabled' });
+                    sendJson(res, 400, {error: 'Invalid mode. Must be auto, copilot, or disabled'});
                     return;
                 }
 
                 await permissionManager.updatePermission(toolName, mode);
-                sendJson(res, 200, { success: true, toolName, mode });
+                sendJson(res, 200, {success: true, toolName, mode});
             } catch (error) {
-                sendJson(res, 500, { error: String(error) });
+                sendJson(res, 500, {error: String(error)});
             }
         } else if (req.url === '/api/permissions/batch' && req.method === 'POST') {
             try {
@@ -190,23 +190,23 @@ async function main() {
                 const updates = new Map<string, 'auto' | 'copilot' | 'disabled'>();
                 for (const [toolName, mode] of Object.entries(rawUpdates)) {
                     if (!['auto', 'copilot', 'disabled'].includes(mode as string)) {
-                        sendJson(res, 400, { error: `Invalid mode for ${toolName}: ${mode}` });
+                        sendJson(res, 400, {error: `Invalid mode for ${toolName}: ${mode}`});
                         return;
                     }
                     updates.set(toolName, mode as 'auto' | 'copilot' | 'disabled');
                 }
 
                 await permissionManager.updatePermissions(updates);
-                sendJson(res, 200, { success: true, count: updates.size });
+                sendJson(res, 200, {success: true, count: updates.size});
             } catch (error) {
-                sendJson(res, 500, { error: String(error) });
+                sendJson(res, 500, {error: String(error)});
             }
         } else if (req.url === '/api/permissions/stats' && req.method === 'GET') {
             try {
                 const stats = await permissionManager.getStats();
                 sendJson(res, 200, stats);
             } catch (error) {
-                sendJson(res, 500, { error: String(error) });
+                sendJson(res, 500, {error: String(error)});
             }
         }
         // Approval queue endpoints
@@ -215,32 +215,32 @@ async function main() {
                 const pending = approvalQueue.getPending();
                 sendJson(res, 200, pending);
             } catch (error) {
-                sendJson(res, 500, { error: String(error) });
+                sendJson(res, 500, {error: String(error)});
             }
         } else if (req.url?.startsWith('/api/approvals/') && req.url?.endsWith('/approve') && req.method === 'POST') {
             try {
                 const approvalId = req.url.split('/api/approvals/')[1].split('/approve')[0];
                 const body = await parseJsonBody(req);
                 approvalQueue.approve(approvalId, body.message);
-                sendJson(res, 200, { success: true, approvalId });
+                sendJson(res, 200, {success: true, approvalId});
             } catch (error) {
-                sendJson(res, 400, { error: String(error) });
+                sendJson(res, 400, {error: String(error)});
             }
         } else if (req.url?.startsWith('/api/approvals/') && req.url?.endsWith('/reject') && req.method === 'POST') {
             try {
                 const approvalId = req.url.split('/api/approvals/')[1].split('/reject')[0];
                 const body = await parseJsonBody(req);
                 approvalQueue.reject(approvalId, body.message);
-                sendJson(res, 200, { success: true, approvalId });
+                sendJson(res, 200, {success: true, approvalId});
             } catch (error) {
-                sendJson(res, 400, { error: String(error) });
+                sendJson(res, 400, {error: String(error)});
             }
         } else if (req.url === '/api/approvals/history' && req.method === 'GET') {
             try {
                 const history = approvalQueue.getHistory(100);
                 sendJson(res, 200, history);
             } catch (error) {
-                sendJson(res, 500, { error: String(error) });
+                sendJson(res, 500, {error: String(error)});
             }
         }
         // MCP endpoint
@@ -270,8 +270,8 @@ async function main() {
                 console.error(`[Relay Server] Error handling MCP request:`, error);
                 console.error(`[Relay Server] Error stack:`, error instanceof Error ? error.stack : String(error));
                 if (!res.headersSent) {
-                    res.writeHead(500, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ error: "Internal server error" }));
+                    res.writeHead(500, {"Content-Type": "application/json"});
+                    res.end(JSON.stringify({error: "Internal server error"}));
                 }
             }
         } else if (req.url === "/health") {
@@ -279,7 +279,7 @@ async function main() {
             const info = await relayServer.getInfo();
             const stats = await registry.getStats();
 
-            res.writeHead(200, { "Content-Type": "application/json" });
+            res.writeHead(200, {"Content-Type": "application/json"});
             res.end(
                 JSON.stringify(
                     {
@@ -317,7 +317,7 @@ async function main() {
                 })
             );
 
-            res.writeHead(200, { "Content-Type": "application/json" });
+            res.writeHead(200, {"Content-Type": "application/json"});
             res.end(
                 JSON.stringify(
                     {
@@ -329,7 +329,7 @@ async function main() {
                 )
             );
         } else {
-            res.writeHead(404, { "Content-Type": "text/plain" });
+            res.writeHead(404, {"Content-Type": "text/plain"});
             res.end(
                 `Not Found
 
