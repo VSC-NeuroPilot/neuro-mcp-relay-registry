@@ -1,5 +1,5 @@
-import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
-import type {McpToolCallResult, RawCallToolResult} from "./types";
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { McpToolCallResult, RawCallToolResult } from './types';
 
 /**
  * Normalizes a raw MCP call tool result to `CallToolResult` format from `@modelcontextprotocol/sdk/types.js`.
@@ -13,12 +13,13 @@ export function normalizeCallToolResult(rawResult: RawCallToolResult): CallToolR
             ...legacyResult,
             content: [
                 {
-                    type: "text",
-                    text: typeof legacyResult.toolResult === 'string'
-                        ? legacyResult.toolResult
-                        : JSON.stringify(legacyResult.toolResult, null, 2)
-                }
-            ]
+                    type: 'text',
+                    text:
+                        typeof legacyResult.toolResult === 'string'
+                            ? legacyResult.toolResult
+                            : JSON.stringify(legacyResult.toolResult, null, 2),
+                },
+            ],
         } as CallToolResult;
     }
 
@@ -43,11 +44,11 @@ export function createErrorToolCallResult(message: string): McpToolCallResult {
         result: {
             content: [
                 {
-                    type: "text",
-                    text: message
-                }
+                    type: 'text',
+                    text: message,
+                },
             ],
-            isError: true
-        }
+            isError: true,
+        },
     };
 }

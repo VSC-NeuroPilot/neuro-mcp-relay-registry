@@ -1,6 +1,5 @@
-import {BaseMcpClient} from "./base-client";
-import type {SseMcpClientConfig} from "./types";
-
+import { BaseMcpClient } from './base-client';
+import type { SseMcpClientConfig } from './types';
 
 /**
  * SSE MCP client implementation (placeholder).

@@ -4,11 +4,11 @@
  * Provides thread-safe access to individual upstream MCP servers.
  */
 
-import type {Tool} from '@modelcontextprotocol/sdk/types.js';
-import type {BaseMcpClient} from '../clients/base-client';
-import type {ConnectionState, McpToolCallResult, ServerInfo} from '../clients/types';
-import {createErrorToolCallResult} from '../clients/util';
-import {AsyncMutex} from './locks';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { BaseMcpClient } from '../clients/base-client';
+import type { ConnectionState, McpToolCallResult, ServerInfo } from '../clients/types';
+import { createErrorToolCallResult } from '../clients/util';
+import { AsyncMutex } from './locks';
 
 /**
  * Wraps an MCP client with per-server locking and state management.
@@ -36,7 +36,13 @@ export class ServerWrapper {
     private connectedAt?: Date;
     private readonly metadata: Record<string, unknown>;
 
-    constructor(serverId: string, client: BaseMcpClient, maxPending: number, timeout: number, metadata?: Record<string, unknown>) {
+    constructor(
+        serverId: string,
+        client: BaseMcpClient,
+        maxPending: number,
+        timeout: number,
+        metadata?: Record<string, unknown>
+    ) {
         this.serverId = serverId;
         this.client = client;
         this.lock = new AsyncMutex(maxPending, timeout);
@@ -78,8 +84,8 @@ export class ServerWrapper {
             toolCount: this.client.availableTools.length,
             connectedAt: this.connectedAt,
             error: this.error,
-            metadata: {...this.metadata},
-            config: this.client.getConfig()
+            metadata: { ...this.metadata },
+            config: this.client.getConfig(),
         };
     }
 
@@ -92,7 +98,7 @@ export class ServerWrapper {
         return this.client.availableTools;
     }
 
-// ===== Lifecycle Operations (all acquire lock) =====
+    // ===== Lifecycle Operations (all acquire lock) =====
 
     /**
      * Connect to the upstream MCP server.
@@ -147,9 +153,7 @@ export class ServerWrapper {
                 // Still try to clean up state even if disconnect failed
                 this.connectedAt = undefined;
 
-                throw new Error(
-                    `Failed to disconnect from server ${this.serverId}: ${this.error}`
-                );
+                throw new Error(`Failed to disconnect from server ${this.serverId}: ${this.error}`);
             }
         });
     }
@@ -162,7 +166,9 @@ export class ServerWrapper {
     public async refreshTools(): Promise<void> {
         return this.lock.withLock(async () => {
             if (this.state !== 'connected') {
-                throw new Error(`Cannot refresh tools for server ${this.serverId}: not connected (state: ${this.state})`);
+                throw new Error(
+                    `Cannot refresh tools for server ${this.serverId}: not connected (state: ${this.state})`
+                );
             }
 
             try {
@@ -184,10 +190,7 @@ export class ServerWrapper {
      * @returns Tool execution result
      * @throws Error if server is not connected or tool call fails
      */
-    public async callTool(
-        toolName: string,
-        args?: Record<string, unknown>
-    ): Promise<McpToolCallResult> {
+    public async callTool(toolName: string, args?: Record<string, unknown>): Promise<McpToolCallResult> {
         return this.lock.withLock(async () => {
             if (this.state !== 'connected') {
                 return createErrorToolCallResult(`Server ${this.serverId} is not connected (state: ${this.state})`);

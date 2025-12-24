@@ -1,6 +1,6 @@
-import type {AggregatedTool} from '../registry';
-import {AsyncRWLock} from '../registry';
-import {ApprovalQueue} from './approval-queue';
+import type { AggregatedTool } from '../registry';
+import { AsyncRWLock } from '../registry';
+import { ApprovalQueue } from './approval-queue';
 import type {
     PermissionConfig,
     PermissionManagerOptions,
@@ -8,9 +8,9 @@ import type {
     ToolPermission,
     ToolWithPermission,
 } from './types';
-import type {McpToolCallResult} from '../clients/types';
-import {createErrorToolCallResult} from '../clients/util';
-import type {ToolRouter} from '../router';
+import type { McpToolCallResult } from '../clients/types';
+import { createErrorToolCallResult } from '../clients/util';
+import type { ToolRouter } from '../router';
 
 /**
  * PermissionManager provides fine-grained control over tool execution
@@ -29,7 +29,7 @@ export class PermissionManager {
 
     constructor(router: ToolRouter, options?: PermissionManagerOptions) {
         this.router = router;
-        this.permissionLock = new AsyncRWLock(options?.maxPending ?? 1000, options?.lockTimeout ?? 30000,);
+        this.permissionLock = new AsyncRWLock(options?.maxPending ?? 1000, options?.lockTimeout ?? 30000);
 
         // Initialize configuration with safe defaults
         this.config = {
@@ -74,10 +74,7 @@ export class PermissionManager {
         return this.permissionLock.withWriteLock(async () => {
             const permission: ToolPermission = {
                 mode,
-                copilot:
-                    mode === 'copilot'
-                        ? {...this.config.globalSettings.defaultCopilotSettings}
-                        : undefined,
+                copilot: mode === 'copilot' ? { ...this.config.globalSettings.defaultCopilotSettings } : undefined,
                 lastModified: new Date(),
             };
 
@@ -101,10 +98,7 @@ export class PermissionManager {
             for (const [toolName, mode] of updates) {
                 const permission: ToolPermission = {
                     mode,
-                    copilot:
-                        mode === 'copilot'
-                            ? {...this.config.globalSettings.defaultCopilotSettings}
-                            : undefined,
+                    copilot: mode === 'copilot' ? { ...this.config.globalSettings.defaultCopilotSettings } : undefined,
                     lastModified: now,
                 };
 
@@ -148,7 +142,7 @@ export class PermissionManager {
             mode: this.config.defaultMode,
             copilot:
                 this.config.defaultMode === 'copilot'
-                    ? {...this.config.globalSettings.defaultCopilotSettings}
+                    ? { ...this.config.globalSettings.defaultCopilotSettings }
                     : undefined,
             lastModified: new Date(),
         };
@@ -167,10 +161,7 @@ export class PermissionManager {
      * Execute a tool with permission checks and approval workflow
      * This is the main entry point for tool execution
      */
-    async executeTool(
-        toolName: string,
-        args?: Record<string, unknown>
-    ): Promise<McpToolCallResult> {
+    async executeTool(toolName: string, args?: Record<string, unknown>): Promise<McpToolCallResult> {
         // Check permission (with read lock)
         const permission = await this.checkPermission(toolName);
 
@@ -194,7 +185,7 @@ export class PermissionManager {
      */
     async filterEnabledTools(tools: readonly AggregatedTool[]): Promise<AggregatedTool[]> {
         return this.permissionLock.withReadLock(async () => {
-            return tools.filter((tool) => {
+            return tools.filter(tool => {
                 const permission = this.getPermissionUnsafe(tool.name);
                 return permission.mode !== 'disabled';
             });
@@ -208,7 +199,7 @@ export class PermissionManager {
         return this.permissionLock.withReadLock(async () => {
             const tools = await this.router.listAllTools();
 
-            return tools.map((tool) => ({
+            return tools.map(tool => ({
                 toolName: tool.name,
                 serverId: tool.serverId,
                 originalToolName: tool.originalName,
@@ -282,7 +273,7 @@ export class PermissionManager {
             return createErrorToolCallResult(`Invalid tool name format: ${toolName}`);
         }
 
-        const {serverId, originalToolName} = parsed;
+        const { serverId, originalToolName } = parsed;
         const normalizedArgs = args ?? {};
 
         // Step 1: Request approval (if required)
@@ -349,6 +340,6 @@ export class PermissionManager {
             return null;
         }
 
-        return {serverId, originalToolName};
+        return { serverId, originalToolName };
     }
 }

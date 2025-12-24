@@ -4,11 +4,11 @@
  * Tool names are in the format "serverID:toolName" where serverID identifies which upstream server provides the tool.
  */
 
-import type {McpToolCallResult} from '../clients/types';
-import {createErrorToolCallResult} from '../clients/util';
-import type {AggregatedTool, ServerRegistry} from '../registry';
-import {ToolNameParser} from './tool-name-parser';
-import type {ParsedToolName} from './types';
+import type { McpToolCallResult } from '../clients/types';
+import { createErrorToolCallResult } from '../clients/util';
+import type { AggregatedTool, ServerRegistry } from '../registry';
+import { ToolNameParser } from './tool-name-parser';
+import type { ParsedToolName } from './types';
 
 /**
  * Routes tool calls to the appropriate upstream server.
@@ -61,7 +61,7 @@ export class ToolRouter {
     public async listAllTools(): Promise<readonly AggregatedTool[]> {
         const aggregatedTools = await this.registry.getAllTools();
 
-        return aggregatedTools.map((tool) => {
+        return aggregatedTools.map(tool => {
             const prefixedName = this.parser.format(tool.serverId, tool.originalName);
 
             return {
@@ -86,10 +86,7 @@ export class ToolRouter {
      * });
      * ```
      */
-    public async callTool(
-        prefixedToolName: string,
-        args?: Record<string, unknown>
-    ): Promise<McpToolCallResult> {
+    public async callTool(prefixedToolName: string, args?: Record<string, unknown>): Promise<McpToolCallResult> {
         // Parse the tool name
         let parsed: ParsedToolName;
         try {
@@ -98,7 +95,7 @@ export class ToolRouter {
             return createErrorToolCallResult(String(error));
         }
 
-        const {serverId, toolName} = parsed;
+        const { serverId, toolName } = parsed;
 
         // Check if server exists
         const hasServer = await this.registry.hasServer(serverId);

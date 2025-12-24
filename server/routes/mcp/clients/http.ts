@@ -1,6 +1,6 @@
-import {StreamableHTTPClientTransport} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import {BaseMcpClient} from "./base-client";
-import type {HttpMcpClientConfig} from "./types";
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { BaseMcpClient } from './base-client';
+import type { HttpMcpClientConfig } from './types';
 
 /**
  * MCP client implementation using Streamable HTTP transport.
@@ -45,7 +45,6 @@ export class StreamableHttpMcpClient extends BaseMcpClient {
 
             // Load available tools using inherited method
             this.tools = await this.listToolsFromServer();
-
         } catch (error) {
             this.connected = false;
             this.transport = null;
@@ -68,7 +67,6 @@ export class StreamableHttpMcpClient extends BaseMcpClient {
 
             // Use inherited cleanup for common resources
             await this.cleanupResources();
-
         } catch (error) {
             console.error(`[${this.getDisplayName()}] Error during disconnect: ${error}. Force cleaning up...`);
             // Force cleanup

@@ -6,12 +6,12 @@
  * - Level 2 (Per-Server): Each ServerWrapper has its own mutex
  */
 
-import type {McpToolCallResult} from '../clients/types';
-import {createErrorToolCallResult} from '../clients/util';
-import {McpClientFactory} from '../clients/factory';
-import {AsyncRWLock} from './locks';
-import {ServerWrapper} from './server-wrapper';
-import type {AggregatedTool, RegistrationResult, RegistryStats, ServerRegistrationConfig,} from './types';
+import type { McpToolCallResult } from '../clients/types';
+import { createErrorToolCallResult } from '../clients/util';
+import { McpClientFactory } from '../clients/factory';
+import { AsyncRWLock } from './locks';
+import { ServerWrapper } from './server-wrapper';
+import type { AggregatedTool, RegistrationResult, RegistryStats, ServerRegistrationConfig } from './types';
 
 /**
  * Central registry for managing upstream MCP servers.
@@ -74,7 +74,7 @@ export class ServerRegistry {
      * ```
      */
     public async registerServer(config: ServerRegistrationConfig): Promise<RegistrationResult> {
-        const {serverId, clientConfig, autoConnect = true, metadata} = config;
+        const { serverId, clientConfig, autoConnect = true, metadata } = config;
 
         return this.serversLock.withWriteLock(async () => {
             // Check if server already exists
@@ -97,10 +97,7 @@ export class ServerRegistry {
                     } catch (error) {
                         // Connection failed, but server is still registered
                         // User can retry connection later
-                        console.error(
-                            `[ServerRegistry] Auto-connect failed for ${serverId}:`,
-                            error
-                        );
+                        console.error(`[ServerRegistry] Auto-connect failed for ${serverId}:`, error);
                     }
                 }
 
@@ -148,8 +145,7 @@ export class ServerRegistry {
         try {
             await wrapper.disconnect();
         } catch (error) {
-            console.error(
-                `[ServerRegistry] Error disconnecting server ${serverId}: ${String(error)}`,);
+            console.error(`[ServerRegistry] Error disconnecting server ${serverId}: ${String(error)}`);
         }
     }
 
@@ -189,7 +185,7 @@ export class ServerRegistry {
         });
     }
 
-// ===== Tool Operations =====
+    // ===== Tool Operations =====
 
     /**
      * Get all tools from all registered servers.
@@ -333,14 +329,11 @@ export class ServerRegistry {
         });
 
         // Disconnect all servers (outside the write lock)
-        const disconnectPromises = servers.map(async (wrapper) => {
+        const disconnectPromises = servers.map(async wrapper => {
             try {
                 await wrapper.disconnect();
             } catch (error) {
-                console.error(
-                    `[ServerRegistry] Error disconnecting ${wrapper.getServerId()}:`,
-                    error
-                );
+                console.error(`[ServerRegistry] Error disconnecting ${wrapper.getServerId()}:`, error);
             }
         });
 

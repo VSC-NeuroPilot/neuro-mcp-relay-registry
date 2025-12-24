@@ -2,7 +2,7 @@
  * Utility for parsing and formatting tool names with server ID prefixes (example: server1:tool1).
  */
 
-import type {ParsedToolName} from './types';
+import type { ParsedToolName } from './types';
 
 /**
  * Parser for tool names in the format "serverID:toolName".
@@ -52,14 +52,18 @@ export class ToolNameParser {
         const separatorIndex = prefixedName.indexOf(this.separator);
 
         if (separatorIndex === -1) {
-            console.error(`Invalid tool name format. Expected "serverID${this.separator}toolName", got "${prefixedName}"`);
+            console.error(
+                `Invalid tool name format. Expected "serverID${this.separator}toolName", got "${prefixedName}"`
+            );
         }
 
         const serverId = prefixedName.substring(0, separatorIndex);
         const toolName = prefixedName.substring(separatorIndex + this.separator.length);
 
         if (!serverId || !toolName) {
-            console.error(`Invalid tool name format. Both server ID and tool name must be non-empty. Got "${prefixedName}"`);
+            console.error(
+                `Invalid tool name format. Both server ID and tool name must be non-empty. Got "${prefixedName}"`
+            );
         }
 
         return {

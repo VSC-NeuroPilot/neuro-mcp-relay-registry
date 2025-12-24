@@ -1,7 +1,7 @@
-import type {StreamableHTTPClientTransportOptions} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import type {SSEClientTransportOptions} from "@modelcontextprotocol/sdk/client/sse.js";
-import type {StdioServerParameters} from "@modelcontextprotocol/sdk/client/stdio.js";
-import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
+import type { StreamableHTTPClientTransportOptions } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import type { SSEClientTransportOptions } from '@modelcontextprotocol/sdk/client/sse.js';
+import type { StdioServerParameters } from '@modelcontextprotocol/sdk/client/stdio.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 /**
  * Supported MCP transport types
@@ -100,20 +100,12 @@ export interface StdioMcpClientConfig extends BaseMcpClientConfig, Omit<StdioSer
 /**
  * Union type for all client configurations
  */
-export type McpClientConfig =
-    | HttpMcpClientConfig
-    | SseMcpClientConfig
-    | StdioMcpClientConfig;
+export type McpClientConfig = HttpMcpClientConfig | SseMcpClientConfig | StdioMcpClientConfig;
 
 /**
  * Server connection state
  */
-export type ConnectionState =
-    | 'disconnected'
-    | 'disconnecting'
-    | 'connecting'
-    | 'connected'
-    | 'error';
+export type ConnectionState = 'disconnected' | 'disconnecting' | 'connecting' | 'connected' | 'error';
 
 /**
  * Server connection information

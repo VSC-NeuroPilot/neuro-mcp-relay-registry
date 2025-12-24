@@ -5,9 +5,9 @@
  * Example: tsx example-permission-control-cli.ts http://127.0.0.1:3100
  */
 
-import * as readline from "readline";
+import * as readline from 'readline';
 
-const DEFAULT_RELAY_URL = "http://127.0.0.1:3100";
+const DEFAULT_RELAY_URL = 'http://127.0.0.1:3100';
 
 interface ToolPermission {
     toolName: string;
@@ -44,7 +44,7 @@ class PermissionCLI {
         this.baseUrl = baseUrl;
         this.rl = readline.createInterface({
             input: process.stdin,
-            output: process.stdout
+            output: process.stdout,
         });
     }
 
@@ -60,13 +60,13 @@ class PermissionCLI {
     }
 
     async listPermissions(): Promise<void> {
-        console.log("\n=== Tool Permissions ===\n");
+        console.log('\n=== Tool Permissions ===\n');
         try {
             const data = await this.fetch('/api/permissions');
             const tools: ToolPermission[] = data.allTools;
 
             if (tools.length === 0) {
-                console.log("No tools available");
+                console.log('No tools available');
                 return;
             }
 
@@ -84,11 +84,12 @@ class PermissionCLI {
                 const serverName = serverTools[0]?.serverName || serverId;
                 console.log(`\n${serverName} (${serverId}):`);
                 for (const tool of serverTools) {
-                    const modeIcon = {
-                        'auto': '🟢',
-                        'copilot': '🟡',
-                        'disabled': '🔴'
-                    }[tool.permission.mode] || '⚪';
+                    const modeIcon =
+                        {
+                            auto: '🟢',
+                            copilot: '🟡',
+                            disabled: '🔴',
+                        }[tool.permission.mode] || '⚪';
 
                     console.log(`  ${modeIcon} ${tool.toolName.padEnd(40)} [${tool.permission.mode.toUpperCase()}]`);
                 }
@@ -97,7 +98,7 @@ class PermissionCLI {
             console.log(`\nTotal: ${tools.length} tools`);
             console.log(`Legend: 🟢 Auto  🟡 Copilot  🔴 Disabled\n`);
         } catch (error) {
-            console.error("Failed to list permissions:", error);
+            console.error('Failed to list permissions:', error);
         }
     }
 
@@ -105,8 +106,8 @@ class PermissionCLI {
         try {
             await this.fetch(`/api/permissions/${encodeURIComponent(toolName)}`, {
                 method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({mode})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode }),
             });
             console.log(`✓ Updated ${toolName} to ${mode.toUpperCase()} mode`);
         } catch (error) {
@@ -115,12 +116,12 @@ class PermissionCLI {
     }
 
     async viewPendingApprovals(): Promise<void> {
-        console.log("\n=== Pending Approvals ===\n");
+        console.log('\n=== Pending Approvals ===\n');
         try {
             const pending: PendingApproval[] = await this.fetch('/api/approvals/pending');
 
             if (pending.length === 0) {
-                console.log("No pending approvals");
+                console.log('No pending approvals');
                 return;
             }
 
@@ -153,7 +154,7 @@ class PermissionCLI {
 
             console.log(`Total: ${pending.length} pending approval(s)\n`);
         } catch (error) {
-            console.error("Failed to get pending approvals:", error);
+            console.error('Failed to get pending approvals:', error);
         }
     }
 
@@ -161,8 +162,8 @@ class PermissionCLI {
         try {
             await this.fetch(`/api/approvals/${approvalId}/approve`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: message || 'Approved via CLI'})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message || 'Approved via CLI' }),
             });
             console.log(`✓ Approved ${approvalId}`);
         } catch (error) {
@@ -174,8 +175,8 @@ class PermissionCLI {
         try {
             await this.fetch(`/api/approvals/${approvalId}/reject`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: message || 'Rejected via CLI'})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message || 'Rejected via CLI' }),
             });
             console.log(`✓ Rejected ${approvalId}`);
         } catch (error) {
@@ -184,22 +185,23 @@ class PermissionCLI {
     }
 
     async viewHistory(): Promise<void> {
-        console.log("\n=== Approval History ===\n");
+        console.log('\n=== Approval History ===\n');
         try {
             const history: PendingApproval[] = await this.fetch('/api/approvals/history');
 
             if (history.length === 0) {
-                console.log("No approval history");
+                console.log('No approval history');
                 return;
             }
 
             for (const approval of history.slice(0, 20)) {
-                const statusIcon = {
-                    'approved': '✅',
-                    'rejected': '❌',
-                    'timeout': '⏱️',
-                    'cancelled': '🚫'
-                }[approval.status] || '⚪';
+                const statusIcon =
+                    {
+                        approved: '✅',
+                        rejected: '❌',
+                        timeout: '⏱️',
+                        cancelled: '🚫',
+                    }[approval.status] || '⚪';
 
                 const typeIcon = approval.type === 'request' ? '📥' : '📤';
 
@@ -212,12 +214,12 @@ class PermissionCLI {
 
             console.log(`Showing last ${Math.min(20, history.length)} of ${history.length} approval(s)\n`);
         } catch (error) {
-            console.error("Failed to get history:", error);
+            console.error('Failed to get history:', error);
         }
     }
 
     async viewStats(): Promise<void> {
-        console.log("\n=== Permission System Statistics ===\n");
+        console.log('\n=== Permission System Statistics ===\n');
         try {
             const stats = await this.fetch('/api/permissions/stats');
 
@@ -232,26 +234,26 @@ class PermissionCLI {
             console.log(`  Total Processed: ${stats.totalProcessed}`);
             console.log();
         } catch (error) {
-            console.error("Failed to get stats:", error);
+            console.error('Failed to get stats:', error);
         }
     }
 
     async interactiveMode(): Promise<void> {
-        console.log("\n=== Interactive Permission Manager ===\n");
-        console.log("Commands:");
-        console.log("  list, l       - List all tool permissions");
-        console.log("  pending, p    - View pending approvals");
-        console.log("  approve <id>  - Approve a pending approval");
-        console.log("  reject <id>   - Reject a pending approval");
-        console.log("  set <tool> <mode> - Set permission mode (auto/copilot/disabled)");
-        console.log("  history, h    - View approval history");
-        console.log("  stats, s      - View statistics");
-        console.log("  help          - Show this help");
-        console.log("  quit, q       - Exit");
+        console.log('\n=== Interactive Permission Manager ===\n');
+        console.log('Commands:');
+        console.log('  list, l       - List all tool permissions');
+        console.log('  pending, p    - View pending approvals');
+        console.log('  approve <id>  - Approve a pending approval');
+        console.log('  reject <id>   - Reject a pending approval');
+        console.log('  set <tool> <mode> - Set permission mode (auto/copilot/disabled)');
+        console.log('  history, h    - View approval history');
+        console.log('  stats, s      - View statistics');
+        console.log('  help          - Show this help');
+        console.log('  quit, q       - Exit');
         console.log();
 
         while (true) {
-            const input = await this.question("> ");
+            const input = await this.question('> ');
             const parts = input.trim().split(/\s+/);
             const command = parts[0]?.toLowerCase();
 
@@ -271,7 +273,7 @@ class PermissionCLI {
 
                     case 'approve':
                         if (parts.length < 2) {
-                            console.log("Usage: approve <approval-id> [message]");
+                            console.log('Usage: approve <approval-id> [message]');
                         } else {
                             const approvalId = parts[1];
                             const message = parts.slice(2).join(' ');
@@ -281,7 +283,7 @@ class PermissionCLI {
 
                     case 'reject':
                         if (parts.length < 2) {
-                            console.log("Usage: reject <approval-id> [message]");
+                            console.log('Usage: reject <approval-id> [message]');
                         } else {
                             const approvalId = parts[1];
                             const message = parts.slice(2).join(' ');
@@ -291,12 +293,12 @@ class PermissionCLI {
 
                     case 'set':
                         if (parts.length < 3) {
-                            console.log("Usage: set <tool-name> <auto|copilot|disabled>");
+                            console.log('Usage: set <tool-name> <auto|copilot|disabled>');
                         } else {
                             const toolName = parts[1];
                             const mode = parts[2] as 'auto' | 'copilot' | 'disabled';
                             if (!['auto', 'copilot', 'disabled'].includes(mode)) {
-                                console.log("Invalid mode. Must be: auto, copilot, or disabled");
+                                console.log('Invalid mode. Must be: auto, copilot, or disabled');
                             } else {
                                 await this.updatePermission(toolName, mode);
                             }
@@ -314,22 +316,22 @@ class PermissionCLI {
                         break;
 
                     case 'help':
-                        console.log("\nCommands:");
-                        console.log("  list, l       - List all tool permissions");
-                        console.log("  pending, p    - View pending approvals");
-                        console.log("  approve <id>  - Approve a pending approval");
-                        console.log("  reject <id>   - Reject a pending approval");
-                        console.log("  set <tool> <mode> - Set permission mode");
-                        console.log("  history, h    - View approval history");
-                        console.log("  stats, s      - View statistics");
-                        console.log("  help          - Show this help");
-                        console.log("  quit, q       - Exit\n");
+                        console.log('\nCommands:');
+                        console.log('  list, l       - List all tool permissions');
+                        console.log('  pending, p    - View pending approvals');
+                        console.log('  approve <id>  - Approve a pending approval');
+                        console.log('  reject <id>   - Reject a pending approval');
+                        console.log('  set <tool> <mode> - Set permission mode');
+                        console.log('  history, h    - View approval history');
+                        console.log('  stats, s      - View statistics');
+                        console.log('  help          - Show this help');
+                        console.log('  quit, q       - Exit\n');
                         break;
 
                     case 'quit':
                     case 'q':
                     case 'exit':
-                        console.log("Goodbye!");
+                        console.log('Goodbye!');
                         this.rl.close();
                         return;
 
@@ -337,7 +339,7 @@ class PermissionCLI {
                         console.log(`Unknown command: ${command}. Type 'help' for available commands.`);
                 }
             } catch (error) {
-                console.error("Error:", error);
+                console.error('Error:', error);
             }
 
             console.log();
@@ -349,7 +351,7 @@ class PermissionCLI {
             await this.checkConnection();
             await this.interactiveMode();
         } catch (error) {
-            console.error("Fatal error:", error);
+            console.error('Fatal error:', error);
             this.rl.close();
             process.exit(1);
         }
@@ -366,7 +368,7 @@ class PermissionCLI {
     }
 
     private question(prompt: string): Promise<string> {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.rl.question(prompt, resolve);
         });
     }
@@ -378,7 +380,7 @@ async function main() {
     await cli.run();
 }
 
-main().catch((error) => {
-    console.error("Fatal error:", error);
+main().catch(error => {
+    console.error('Fatal error:', error);
     process.exit(1);
 });

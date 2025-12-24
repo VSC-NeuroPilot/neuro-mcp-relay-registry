@@ -2,8 +2,8 @@
  * Type definitions for the server registry system.
  */
 
-import type {Tool} from '@modelcontextprotocol/sdk/types.js';
-import type {McpClientConfig, ServerInfo} from '../clients/types';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { McpClientConfig, ServerInfo } from '../clients/types';
 
 /**
  * Tool with server source information for aggregated tool lists.

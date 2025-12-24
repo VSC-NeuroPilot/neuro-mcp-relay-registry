@@ -3,13 +3,13 @@
  * This class handles MCP protocol interactions and delegates tool operations to the router and registry.
  */
 
-import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
-import type {CallToolRequest, ListToolsRequest} from '@modelcontextprotocol/sdk/types.js';
-import {CallToolRequestSchema, ListToolsRequestSchema} from '@modelcontextprotocol/sdk/types.js';
-import {ServerRegistry} from '../registry';
-import {ToolRouter} from '../router';
-import {PermissionManager} from '../permissions';
-import type {McpRelayServerConfig, RelayServerInfo} from './types';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { CallToolRequest, ListToolsRequest } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { ServerRegistry } from '../registry';
+import { ToolRouter } from '../router';
+import { PermissionManager } from '../permissions';
+import type { McpRelayServerConfig, RelayServerInfo } from './types';
 
 /**
  * This class aggregates tools from multiple upstream servers.
@@ -77,9 +77,9 @@ export class McpRelayServer {
             },
             {
                 capabilities: {
-                    tools: {}
+                    tools: {},
                 },
-                instructions: config.instructions
+                instructions: config.instructions,
             }
         );
     }
@@ -171,7 +171,7 @@ export class McpRelayServer {
             version: this.config.version,
             registeredServers: stats.totalServers,
             totalTools: stats.totalTools,
-            uptime
+            uptime,
         };
     }
 
@@ -198,20 +198,14 @@ export class McpRelayServer {
      */
     private setupHandlers(): void {
         // Register tool list handler
-        this.mcpServer.server.setRequestHandler(
-            ListToolsRequestSchema,
-            async (request: ListToolsRequest) => {
-                return this.handleListTools(request);
-            }
-        );
+        this.mcpServer.server.setRequestHandler(ListToolsRequestSchema, async (request: ListToolsRequest) => {
+            return this.handleListTools(request);
+        });
 
         // Register tool call handler
-        this.mcpServer.server.setRequestHandler(
-            CallToolRequestSchema,
-            async (request: CallToolRequest) => {
-                return this.handleCallTool(request);
-            }
-        );
+        this.mcpServer.server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
+            return this.handleCallTool(request);
+        });
     }
 
     /**
@@ -232,7 +226,7 @@ export class McpRelayServer {
      * Handle tools/call request - check permissions and route to appropriate server.
      */
     private async handleCallTool(request: CallToolRequest) {
-        const {name, arguments: args} = request.params;
+        const { name, arguments: args } = request.params;
 
         // Execute tool with permission checks and approval workflow
         const result = await this.permissionManager.executeTool(name, args);

@@ -1,5 +1,5 @@
 ---
-"server": major
+'server': major
 ---
 
 Initial release

@@ -2,8 +2,8 @@
  * Type definitions for the MCP relay server.
  */
 
-import type {ServerRegistry} from '../registry';
-import type {PermissionMode} from '../permissions';
+import type { ServerRegistry } from '../registry';
+import type { PermissionMode } from '../permissions';
 
 /**
  * Configuration for the MCP relay server.
@@ -27,7 +27,7 @@ export interface McpRelayServerConfig {
     /**
      * Timeout in milliseconds for the lock to prevent deadlock
      */
-    lockTimeout: number
+    lockTimeout: number;
 
     /**
      * Separator for prefixing used when constructing tool names (e.g., the ":" in server1:tool1)

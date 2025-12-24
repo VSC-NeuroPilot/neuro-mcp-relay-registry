@@ -1,21 +1,20 @@
-import {Hono} from 'hono';
-import {cors} from 'hono/cors';
-import {StreamableHTTPServerTransport} from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import {toFetchResponse, toReqRes} from 'fetch-to-node';
-import {McpRelayServer} from './routes/mcp';
-import {PermissionMode} from "./routes/mcp/permissions";
-
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { toFetchResponse, toReqRes } from 'fetch-to-node';
+import { McpRelayServer } from './routes/mcp';
+import { PermissionMode } from './routes/mcp/permissions';
 
 // Initialize the relay server when the module loads
 async function initializeRelayServer() {
     try {
         // Create relay server instance
         let relayServer = new McpRelayServer({
-            name: "neuro-mcp-relay-registry",
-            version: "0.0.1-beta",
+            name: 'neuro-mcp-relay-registry',
+            version: '0.0.1-beta',
             maxPending: 100,
             lockTimeout: 30000,
-            toolSeparator: ":", // Use colon as separator for serverID:toolName
+            toolSeparator: ':', // Use colon as separator for serverID:toolName
             defaultPermissionMode: 'copilot', // Default to copilot mode for security
         });
 
@@ -35,8 +34,8 @@ async function initializeRelayServer() {
 }
 
 const relayServer = await initializeRelayServer();
-const permissionManager = relayServer.getPermissionManager()
-const approvalQueue = permissionManager.getApprovalQueue()
+const permissionManager = relayServer.getPermissionManager();
+const approvalQueue = permissionManager.getApprovalQueue();
 
 const app = new Hono();
 
@@ -45,14 +44,14 @@ app.use('*', cors());
 
 // ========== Relay server endpoints ==========
 
-app.get('/health', async (c) => {
+app.get('/health', async c => {
     try {
         const info = await relayServer.getInfo();
         const registry = relayServer.getRegistry();
         const stats = await registry.getStats();
 
         return c.json({
-            status: "ok",
+            status: 'ok',
             ...info,
             servers: {
                 total: stats.totalServers,
@@ -62,18 +61,18 @@ app.get('/health', async (c) => {
             },
         });
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.get('/stats', async (c) => {
+app.get('/stats', async c => {
     try {
         const registry = relayServer.getRegistry();
         const stats = await registry.getStats();
         const servers = await registry.listServers();
 
         const serverDetails = await Promise.all(
-            servers.map(async (serverId) => {
+            servers.map(async serverId => {
                 const wrapper = await registry.getServer(serverId);
                 if (!wrapper) return null;
 
@@ -90,16 +89,18 @@ app.get('/stats', async (c) => {
 
         return c.json({
             stats,
-            servers: serverDetails.filter((s) => s !== null),
+            servers: serverDetails.filter(s => s !== null),
         });
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.post('/mcp', async (c) => {
-    console.log(`[Server] Incoming MCP request from ${c.req.header('X-Forwarded-For') || c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || c.req.raw.headers.get('X-Real-IP') || 'unknown'}`);
-    const {req, res} = toReqRes(c.req.raw);
+app.post('/mcp', async c => {
+    console.log(
+        `[Server] Incoming MCP request from ${c.req.header('X-Forwarded-For') || c.req.header('CF-Connecting-IP') || c.req.header('X-Real-IP') || c.req.raw.headers.get('X-Real-IP') || 'unknown'}`
+    );
+    const { req, res } = toReqRes(c.req.raw);
 
     try {
         // Get the MCP server instance
@@ -128,18 +129,16 @@ app.post('/mcp', async (c) => {
         });
 
         return toFetchResponse(res);
-
     } catch (error) {
         console.error(`[Relay Server] Error handling MCP request:`, error);
         console.error(`[Relay Server] Error stack:`, String(error));
-        return c.json({error: "Internal server error"});
+        return c.json({ error: 'Internal server error' });
     }
 });
 
-
 // ========== Permission Control Endpoints ==========
 
-app.get('/api/permissions', async (c) => {
+app.get('/api/permissions', async c => {
     try {
         const permissions = await permissionManager.getAllPermissions();
         const toolsWithPermissions = await permissionManager.getToolsWithPermissions();
@@ -152,113 +151,113 @@ app.get('/api/permissions', async (c) => {
             allTools: toolsWithPermissions,
         });
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.put('/api/permissions/:toolName', async (c) => {
+app.put('/api/permissions/:toolName', async c => {
     const toolName = c.req.param('toolName');
-    const {mode} = await c.req.json();
+    const { mode } = await c.req.json();
 
     if (!['auto', 'copilot', 'disabled'].includes(mode)) {
-        return c.json({error: 'Invalid mode. Must be auto, copilot, or disabled'}, 400);
+        return c.json({ error: 'Invalid mode. Must be auto, copilot, or disabled' }, 400);
     }
 
     try {
         await permissionManager.updatePermission(toolName, mode as PermissionMode);
-        return c.json({success: true, toolName, mode});
+        return c.json({ success: true, toolName, mode });
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.post('/api/permissions/batch', async (c) => {
-    const {updates = {}} = await c.req.json();
+app.post('/api/permissions/batch', async c => {
+    const { updates = {} } = await c.req.json();
 
     try {
         // Validate and convert to Map<string, PermissionMode>
         const mapUpdates = new Map<string, PermissionMode>();
         for (const [toolName, mode] of Object.entries(updates)) {
             if (!['auto', 'copilot', 'disabled'].includes(mode as string)) {
-                return c.json({error: `Invalid mode for ${toolName}: ${mode}`}, 400);
+                return c.json({ error: `Invalid mode for ${toolName}: ${mode}` }, 400);
             }
             mapUpdates.set(toolName, mode as PermissionMode);
         }
 
         await permissionManager.updatePermissions(mapUpdates);
-        return c.json({success: true, count: mapUpdates.size});
+        return c.json({ success: true, count: mapUpdates.size });
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.get('/api/permissions/stats', async (c) => {
+app.get('/api/permissions/stats', async c => {
     try {
         const stats = await permissionManager.getStats();
         return c.json(stats);
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.get('/api/approvals/pending', async (c) => {
+app.get('/api/approvals/pending', async c => {
     try {
         const pending = approvalQueue.getPending();
         return c.json(pending);
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.post('/api/approvals/:approvalId/approve', async (c) => {
+app.post('/api/approvals/:approvalId/approve', async c => {
     if (!approvalQueue) {
-        return c.json({error: 'Approval queue not available'}, 500);
+        return c.json({ error: 'Approval queue not available' }, 500);
     }
 
     const approvalId = c.req.param('approvalId');
-    const {message} = await c.req.json();
+    const { message } = await c.req.json();
 
     try {
         approvalQueue.approve(approvalId, message);
-        return c.json({success: true, approvalId});
+        return c.json({ success: true, approvalId });
     } catch (error) {
-        return c.json({error: String(error)}, 400);
+        return c.json({ error: String(error) }, 400);
     }
 });
 
-app.post('/api/approvals/:approvalId/reject', async (c) => {
+app.post('/api/approvals/:approvalId/reject', async c => {
     const approvalId = c.req.param('approvalId');
-    const {message} = await c.req.json();
+    const { message } = await c.req.json();
 
     try {
         approvalQueue.reject(approvalId, message);
-        return c.json({success: true, approvalId});
+        return c.json({ success: true, approvalId });
     } catch (error) {
-        return c.json({error: String(error)}, 400);
+        return c.json({ error: String(error) }, 400);
     }
 });
 
-app.get('/api/approvals/history', async (c) => {
+app.get('/api/approvals/history', async c => {
     try {
         const history = approvalQueue.getHistory(100);
         return c.json(history);
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
 // ========== Upstream Server Management Endpoints ==========
 
-app.post('/api/servers/register', async (c) => {
+app.post('/api/servers/register', async c => {
     const registry = relayServer.getRegistry();
-    const {serverId, clientConfig} = await c.req.json();
+    const { serverId, clientConfig } = await c.req.json();
 
     if (!serverId || !clientConfig) {
-        return c.json({error: 'Missing serverId or clientConfig'}, 400);
+        return c.json({ error: 'Missing serverId or clientConfig' }, 400);
     }
 
     if (!clientConfig.transport || !clientConfig.serverUrl || !clientConfig.name) {
-        return c.json({error: 'clientConfig requires transport, serverUrl, and name'}, 400);
+        return c.json({ error: 'clientConfig requires transport, serverUrl, and name' }, 400);
     }
 
     try {
@@ -273,27 +272,30 @@ app.post('/api/servers/register', async (c) => {
             return c.json({
                 success: true,
                 serverId,
-                serverInfo: result.serverInfo
+                serverInfo: result.serverInfo,
             });
         } else {
-            return c.json({
-                success: false,
-                error: result.error || 'Registration failed'
-            }, 500);
+            return c.json(
+                {
+                    success: false,
+                    error: result.error || 'Registration failed',
+                },
+                500
+            );
         }
     } catch (error) {
         console.error(`[Server] Failed to register ${serverId}:`, error);
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-app.get('/api/servers', async (c) => {
+app.get('/api/servers', async c => {
     const registry = relayServer.getRegistry();
 
     try {
         const serverIds = await registry.listServers();
         const serverDetails = await Promise.all(
-            serverIds.map(async (serverId) => {
+            serverIds.map(async serverId => {
                 const server = await registry.getServer(serverId);
                 if (!server) return null;
 
@@ -309,11 +311,11 @@ app.get('/api/servers', async (c) => {
         );
 
         return c.json({
-            servers: serverDetails.filter((s) => s !== null),
+            servers: serverDetails.filter(s => s !== null),
         });
     } catch (error) {
-        return c.json({error: String(error)}, 500);
+        return c.json({ error: String(error) }, 500);
     }
 });
 
-export default app
+export default app;

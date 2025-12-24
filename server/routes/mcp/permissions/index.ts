@@ -1,5 +1,5 @@
-export {PermissionManager} from './permission-manager';
-export {ApprovalQueue} from './approval-queue';
+export { PermissionManager } from './permission-manager';
+export { ApprovalQueue } from './approval-queue';
 export type {
     PermissionMode,
     PermissionConfig,

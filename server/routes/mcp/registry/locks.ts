@@ -38,7 +38,7 @@ export class AsyncRWLock {
     constructor(maxPending: number, timeout: number) {
         this.lock = new AsyncLock({
             maxPending: maxPending,
-            timeout: timeout
+            timeout: timeout,
         });
     }
 
@@ -91,7 +91,7 @@ export class AsyncMutex {
     constructor(maxPending: number, timeout: number) {
         this.lock = new AsyncLock({
             maxPending: maxPending,
-            timeout: timeout
+            timeout: timeout,
         });
     }
 

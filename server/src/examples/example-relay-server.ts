@@ -6,11 +6,11 @@
  * Example: tsx example-relay-server.ts  http://localhost:3000 http://127.0.0.1:8000 --host 127.0.0.1 --port 3100
  */
 
-import {StreamableHTTPServerTransport} from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import {McpRelayServer} from "../../routes/mcp";
-import {createServer} from "http";
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { McpRelayServer } from '../../routes/mcp';
+import { createServer } from 'http';
 
-const DEFAULT_HOST = "127.0.0.1";
+const DEFAULT_HOST = '127.0.0.1';
 const DEFAULT_PORT = 3100;
 
 interface ParsedArgs {
@@ -28,11 +28,11 @@ function parseArgs(): ParsedArgs {
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
 
-        if (arg === "--host" || arg === "-h") {
+        if (arg === '--host' || arg === '-h') {
             host = args[++i];
-        } else if (arg === "--port" || arg === "-p") {
+        } else if (arg === '--port' || arg === '-p') {
             port = parseInt(args[++i], 10);
-        } else if (arg.startsWith("http://") || arg.startsWith("https://")) {
+        } else if (arg.startsWith('http://') || arg.startsWith('https://')) {
             upstreamUrls.push(arg);
         } else {
             console.error(`Unknown argument: ${arg}`);
@@ -40,22 +40,24 @@ function parseArgs(): ParsedArgs {
         }
     }
 
-    return {upstreamUrls, host, port};
+    return { upstreamUrls, host, port };
 }
 
 async function main() {
-    const {upstreamUrls, host, port} = parseArgs();
+    const { upstreamUrls, host, port } = parseArgs();
 
     if (upstreamUrls.length === 0) {
-        console.error("Error: Please provide at least one upstream server URL");
-        console.error("Usage: tsx test-relay-server.ts <server-url-1> <server-url-2> ... [--host <host>] [--port <port>]");
-        console.error("Example: tsx test-relay-server.ts http://127.0.0.1:3001 http://127.0.0.1:3002");
-        console.error("Example: tsx test-relay-server.ts http://127.0.0.1:3001 --host 127.0.0.1 --port 3100");
+        console.error('Error: Please provide at least one upstream server URL');
+        console.error(
+            'Usage: tsx test-relay-server.ts <server-url-1> <server-url-2> ... [--host <host>] [--port <port>]'
+        );
+        console.error('Example: tsx test-relay-server.ts http://127.0.0.1:3001 http://127.0.0.1:3002');
+        console.error('Example: tsx test-relay-server.ts http://127.0.0.1:3001 --host 127.0.0.1 --port 3100');
         process.exit(1);
     }
 
     if (isNaN(port) || port < 1 || port > 65535) {
-        console.error("Error: Invalid port number. Must be between 1 and 65535");
+        console.error('Error: Invalid port number. Must be between 1 and 65535');
         process.exit(1);
     }
 
@@ -63,11 +65,11 @@ async function main() {
 
     // Create relay server instance
     const relayServer = new McpRelayServer({
-        name: "test-relay-server",
-        version: "0.0.1-test",
+        name: 'test-relay-server',
+        version: '0.0.1-test',
         maxPending: 100,
         lockTimeout: 30000,
-        toolSeparator: ":", // Use colon as separator for serverID:toolName
+        toolSeparator: ':', // Use colon as separator for serverID:toolName
     });
 
     // Initialize the relay server
@@ -89,7 +91,7 @@ async function main() {
             const result = await registry.registerServer({
                 serverId,
                 clientConfig: {
-                    transport: "http",
+                    transport: 'http',
                     serverUrl,
                     name: `Server ${i + 1}`,
                 },
@@ -114,7 +116,7 @@ async function main() {
 
     if (allTools.length > 0) {
         console.log(`[Relay Server] Tool list (with prefixes):`);
-        allTools.forEach((tool) => {
+        allTools.forEach(tool => {
             console.log(`  - ${tool.name} (from ${tool.serverName})`);
         });
     }
@@ -143,7 +145,7 @@ async function main() {
 
     // Helper to send JSON response
     function sendJson(res: any, statusCode: number, data: any) {
-        res.writeHead(statusCode, {'Content-Type': 'application/json'});
+        res.writeHead(statusCode, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(data, null, 2));
     }
 
@@ -163,7 +165,7 @@ async function main() {
                     allTools: toolsWithPermissions,
                 });
             } catch (error) {
-                sendJson(res, 500, {error: String(error)});
+                sendJson(res, 500, { error: String(error) });
             }
         } else if (req.url?.startsWith('/api/permissions/') && req.method === 'PUT') {
             try {
@@ -172,14 +174,14 @@ async function main() {
                 const mode = body.mode;
 
                 if (!['auto', 'copilot', 'disabled'].includes(mode)) {
-                    sendJson(res, 400, {error: 'Invalid mode. Must be auto, copilot, or disabled'});
+                    sendJson(res, 400, { error: 'Invalid mode. Must be auto, copilot, or disabled' });
                     return;
                 }
 
                 await permissionManager.updatePermission(toolName, mode);
-                sendJson(res, 200, {success: true, toolName, mode});
+                sendJson(res, 200, { success: true, toolName, mode });
             } catch (error) {
-                sendJson(res, 500, {error: String(error)});
+                sendJson(res, 500, { error: String(error) });
             }
         } else if (req.url === '/api/permissions/batch' && req.method === 'POST') {
             try {
@@ -190,23 +192,23 @@ async function main() {
                 const updates = new Map<string, 'auto' | 'copilot' | 'disabled'>();
                 for (const [toolName, mode] of Object.entries(rawUpdates)) {
                     if (!['auto', 'copilot', 'disabled'].includes(mode as string)) {
-                        sendJson(res, 400, {error: `Invalid mode for ${toolName}: ${mode}`});
+                        sendJson(res, 400, { error: `Invalid mode for ${toolName}: ${mode}` });
                         return;
                     }
                     updates.set(toolName, mode as 'auto' | 'copilot' | 'disabled');
                 }
 
                 await permissionManager.updatePermissions(updates);
-                sendJson(res, 200, {success: true, count: updates.size});
+                sendJson(res, 200, { success: true, count: updates.size });
             } catch (error) {
-                sendJson(res, 500, {error: String(error)});
+                sendJson(res, 500, { error: String(error) });
             }
         } else if (req.url === '/api/permissions/stats' && req.method === 'GET') {
             try {
                 const stats = await permissionManager.getStats();
                 sendJson(res, 200, stats);
             } catch (error) {
-                sendJson(res, 500, {error: String(error)});
+                sendJson(res, 500, { error: String(error) });
             }
         }
         // Approval queue endpoints
@@ -215,36 +217,36 @@ async function main() {
                 const pending = approvalQueue.getPending();
                 sendJson(res, 200, pending);
             } catch (error) {
-                sendJson(res, 500, {error: String(error)});
+                sendJson(res, 500, { error: String(error) });
             }
         } else if (req.url?.startsWith('/api/approvals/') && req.url?.endsWith('/approve') && req.method === 'POST') {
             try {
                 const approvalId = req.url.split('/api/approvals/')[1].split('/approve')[0];
                 const body = await parseJsonBody(req);
                 approvalQueue.approve(approvalId, body.message);
-                sendJson(res, 200, {success: true, approvalId});
+                sendJson(res, 200, { success: true, approvalId });
             } catch (error) {
-                sendJson(res, 400, {error: String(error)});
+                sendJson(res, 400, { error: String(error) });
             }
         } else if (req.url?.startsWith('/api/approvals/') && req.url?.endsWith('/reject') && req.method === 'POST') {
             try {
                 const approvalId = req.url.split('/api/approvals/')[1].split('/reject')[0];
                 const body = await parseJsonBody(req);
                 approvalQueue.reject(approvalId, body.message);
-                sendJson(res, 200, {success: true, approvalId});
+                sendJson(res, 200, { success: true, approvalId });
             } catch (error) {
-                sendJson(res, 400, {error: String(error)});
+                sendJson(res, 400, { error: String(error) });
             }
         } else if (req.url === '/api/approvals/history' && req.method === 'GET') {
             try {
                 const history = approvalQueue.getHistory(100);
                 sendJson(res, 200, history);
             } catch (error) {
-                sendJson(res, 500, {error: String(error)});
+                sendJson(res, 500, { error: String(error) });
             }
         }
         // MCP endpoint
-        else if (req.url === "/mcp") {
+        else if (req.url === '/mcp') {
             console.log(`[Relay Server] Incoming ${req.method} request from ${req.socket.remoteAddress}`);
 
             try {
@@ -270,20 +272,20 @@ async function main() {
                 console.error(`[Relay Server] Error handling MCP request:`, error);
                 console.error(`[Relay Server] Error stack:`, error instanceof Error ? error.stack : String(error));
                 if (!res.headersSent) {
-                    res.writeHead(500, {"Content-Type": "application/json"});
-                    res.end(JSON.stringify({error: "Internal server error"}));
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Internal server error' }));
                 }
             }
-        } else if (req.url === "/health") {
+        } else if (req.url === '/health') {
             // Health check endpoint
             const info = await relayServer.getInfo();
             const stats = await registry.getStats();
 
-            res.writeHead(200, {"Content-Type": "application/json"});
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(
                 JSON.stringify(
                     {
-                        status: "ok",
+                        status: 'ok',
                         ...info,
                         servers: {
                             total: stats.totalServers,
@@ -296,13 +298,13 @@ async function main() {
                     2
                 )
             );
-        } else if (req.url === "/stats") {
+        } else if (req.url === '/stats') {
             // Detailed stats endpoint
             const stats = await registry.getStats();
             const servers = await registry.listServers();
 
             const serverDetails = await Promise.all(
-                servers.map(async (serverId) => {
+                servers.map(async serverId => {
                     const wrapper = await registry.getServer(serverId);
                     if (!wrapper) return null;
 
@@ -317,19 +319,19 @@ async function main() {
                 })
             );
 
-            res.writeHead(200, {"Content-Type": "application/json"});
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(
                 JSON.stringify(
                     {
                         stats,
-                        servers: serverDetails.filter((s) => s !== null),
+                        servers: serverDetails.filter(s => s !== null),
                     },
                     null,
                     2
                 )
             );
         } else {
-            res.writeHead(404, {"Content-Type": "text/plain"});
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end(
                 `Not Found
 
@@ -369,17 +371,17 @@ Approval Queue:
     });
 
     // Graceful shutdown
-    process.on("SIGINT", async () => {
-        console.log("\n[Relay Server] Shutting down...");
+    process.on('SIGINT', async () => {
+        console.log('\n[Relay Server] Shutting down...');
         await relayServer.shutdown();
         httpServer.close(() => {
-            console.log("[Relay Server] Server closed");
+            console.log('[Relay Server] Server closed');
             process.exit(0);
         });
     });
 }
 
-main().catch((error) => {
-    console.error("[Relay Server] Fatal error:", error);
+main().catch(error => {
+    console.error('[Relay Server] Fatal error:', error);
     process.exit(1);
 });

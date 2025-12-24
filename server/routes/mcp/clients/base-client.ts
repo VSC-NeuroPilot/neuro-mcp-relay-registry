@@ -1,7 +1,7 @@
-import {Client} from "@modelcontextprotocol/sdk/client/index.js";
-import type {Tool} from '@modelcontextprotocol/sdk/types.js';
-import type {McpClientConfig, McpToolCallResult} from './types';
-import {createErrorToolCallResult, normalizeCallToolResult} from './util';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { McpClientConfig, McpToolCallResult } from './types';
+import { createErrorToolCallResult, normalizeCallToolResult } from './util';
 
 /**
  * Abstract base class for MCP clients.
@@ -37,7 +37,7 @@ export abstract class BaseMcpClient {
     protected constructor(config: McpClientConfig) {
         this.config = config;
         this.initializeClient();
-        this.serverName = this.getDisplayName()
+        this.serverName = this.getDisplayName();
     }
 
     public get availableTools(): readonly Tool[] {
@@ -98,7 +98,7 @@ export abstract class BaseMcpClient {
      */
     public async callTool(toolName: string, args?: Record<string, unknown>): Promise<McpToolCallResult> {
         if (!this.mcpClient || !this.connected) {
-            return createErrorToolCallResult("MCP Client not connected or configured properly");
+            return createErrorToolCallResult('MCP Client not connected or configured properly');
         }
 
         try {
@@ -138,8 +138,8 @@ export abstract class BaseMcpClient {
      */
     protected initializeClient(): void {
         this.mcpClient = new Client({
-            name: this.config.name || "mcp-client",
-            version: "1.0.0"
+            name: this.config.name || 'mcp-client',
+            version: '1.0.0',
         });
     }
 

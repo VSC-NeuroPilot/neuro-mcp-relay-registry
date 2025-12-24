@@ -1,4 +1,4 @@
-import type {McpToolCallResult} from '../clients/types';
+import type { McpToolCallResult } from '../clients/types';
 
 /**
  * Permission modes for tool execution
@@ -77,7 +77,7 @@ export interface PendingApproval {
     type: ApprovalType;
 
     /** Tool information */
-    toolName: string;        // Prefixed name (e.g., "server1:search")
+    toolName: string; // Prefixed name (e.g., "server1:search")
     serverId: string;
     originalToolName: string;
 
@@ -109,7 +109,7 @@ export interface ApprovalRequest {
     originalToolName: string;
     args: Record<string, unknown>;
     response?: McpToolCallResult;
-    timeout?: number;  // milliseconds
+    timeout?: number; // milliseconds
 }
 
 /**

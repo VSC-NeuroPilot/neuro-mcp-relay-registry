@@ -1,4 +1,4 @@
-import type {ApprovalRequest, ApprovalStatus, PendingApproval,} from './types';
+import type { ApprovalRequest, ApprovalStatus, PendingApproval } from './types';
 
 /**
  * Event listener for approval queue changes
@@ -55,7 +55,7 @@ export class ApprovalQueue {
         };
 
         // Create a promise that will be resolved when user approves/rejects
-        const approvalPromise = new Promise<boolean>((resolve) => {
+        const approvalPromise = new Promise<boolean>(resolve => {
             // Store resolver separately (not on the approval object)
             this.resolvers.set(id, resolve);
 
@@ -120,7 +120,7 @@ export class ApprovalQueue {
      */
     cancelForTool(toolName: string): void {
         const approvals = Array.from(this.pending.values()).filter(
-            (a) => a.toolName === toolName && a.status === 'pending'
+            a => a.toolName === toolName && a.status === 'pending'
         );
 
         for (const approval of approvals) {
@@ -132,7 +132,7 @@ export class ApprovalQueue {
      * Get all pending approvals
      */
     getPending(): PendingApproval[] {
-        return Array.from(this.pending.values()).filter((a) => a.status === 'pending');
+        return Array.from(this.pending.values()).filter(a => a.status === 'pending');
     }
 
     /**
@@ -200,12 +200,7 @@ export class ApprovalQueue {
         this.resolve(approvalId, 'timeout', false, 'Approval timed out');
     }
 
-    private resolve(
-        approvalId: string,
-        status: ApprovalStatus,
-        approved: boolean,
-        message?: string
-    ): void {
+    private resolve(approvalId: string, status: ApprovalStatus, approved: boolean, message?: string): void {
         const approval = this.pending.get(approvalId);
         if (!approval) {
             return;
